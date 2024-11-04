@@ -23,6 +23,7 @@ function [M] = monodromy(mu,T,r0,v0,options)
 %     'IntOptions'  - integrator options. event function will be overridden
 %                     default : odeset(AbsTol=1e-9,RelTol=1e-12)
 %
+%   Source: AAE 632 note set K, eq (K.2)
 
 arguments
   mu (1,1) double
