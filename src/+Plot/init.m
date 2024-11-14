@@ -16,3 +16,4 @@ end
 
 % manifold colors: stable, unstable, center
 clr_man = ["#2544F5","#EB3324","#CC1FCC"];
+clr_orb = "#509920";

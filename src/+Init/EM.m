@@ -20,6 +20,10 @@ t_nd2h = @(t_nd) t_nd*t_ast/3600;
 t_nd2d = @(t_nd) t_nd*t_ast/86400;
 t_nd2y = @(t_nd) t_nd2d(t_nd)/365.25;
 
+% radii [km] -> [l*]
+R_Earth = 6371.0/l_ast;
+R_Moon  = 1737.4/l_ast;
+
 % libration points
 L_pts = gen_L_pts(mu);
 
