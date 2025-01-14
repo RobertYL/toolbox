@@ -2,12 +2,20 @@ function [L_pts] = gen_L_pts(mu,options)
 % GEN_L_PTS  Generate libration points
 %   Find the libration points in the PCR3BP with mass ratio MU
 %
-%   mu             : mass ratio
-%   options.Points : libration point numbers
-%                    default : [1,2,3,4,5]
-%   options.AbsTol : NR solver absolute tolerance
-%                    default : 1e-15
-%   options.Planar : return (2,:) or (3,:) points
+%   USAGE:
+%     L_pts = gen_L_pts(mu)
+%
+%   ARGUMENTS:
+%     mu        - positive value
+%                 mass ratio
+%
+%   OPTIONS:
+%     'Points'  - [1 2 3 4 5] (def) | positive integers
+%                 libration point numbers
+%     'AbsTol'  - 1e-15 (def) | positive value
+%                 NR solver absolute tolerance
+%     'Planar'  - false (def) | true
+%                 return (2,:) or (3,:) points
 
 arguments
   mu (1,1) double

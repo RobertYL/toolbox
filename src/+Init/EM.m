@@ -11,18 +11,18 @@ mu = mu(Gm_Earth,Gm_Moon);
 
 % l* [km]
 %   source: supplementary material
-l_ast = 384400;
-l_nd2km = @(l_nd) l_nd*l_ast;
+LU = 384400;
+LU2km = @(l_nd) l_nd*LU;
 
 % t* [s]
-t_ast = sqrt(l_ast^3/(Gm_Earth+Gm_Moon));
-t_nd2h = @(t_nd) t_nd*t_ast/3600;
-t_nd2d = @(t_nd) t_nd*t_ast/86400;
-t_nd2y = @(t_nd) t_nd2d(t_nd)/365.25;
+TU = sqrt(LU^3/(Gm_Earth+Gm_Moon));
+TU2h = @(t_nd) t_nd*TU/3600;
+TU2d = @(t_nd) t_nd*TU/86400;
+TU2y = @(t_nd) TU2d(t_nd)/365.25;
 
-% radii [km] -> [l*]
-R_Earth = 6371.0/l_ast;
-R_Moon  = 1737.4/l_ast;
+% radii [km] -> [LU]
+R_Earth = 6371.0/LU;
+R_Moon  = 1737.4/LU;
 
 % libration points
 L_pts = gen_L_pts(mu);

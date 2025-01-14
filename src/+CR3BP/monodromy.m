@@ -18,10 +18,10 @@ function [M] = monodromy(mu,T,r0,v0,options)
 %                     options : "direct" | "half"
 %
 %     'Integrator'  - integrator
-%                     options : "45" | "89"
+%                     options : "89" | "45"
 %
 %     'IntOptions'  - integrator options. event function will be overridden
-%                     default : odeset(AbsTol=1e-9,RelTol=1e-12)
+%                     default : odeset(AbsTol=1e-13,RelTol=1e-16)
 %
 %   Source: AAE 632 note set K, eq (K.2)
 
@@ -31,8 +31,8 @@ arguments
   r0 (3,1) double
   v0 (3,1) double
   options.Method     (1,1) string = "direct";
-  options.Integrator (1,1) string = "45";
-  options.IntOptions (1,1) struct = odeset(RelTol=1e-9,AbsTol=1e-12);
+  options.Integrator (1,1) string = "89";
+  options.IntOptions (1,1) struct = odeset(RelTol=1e-13,AbsTol=1e-16);
 end
 
 % unpack arguments

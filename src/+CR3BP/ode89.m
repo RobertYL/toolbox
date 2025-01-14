@@ -15,7 +15,7 @@ arguments
   tspan   (1,:) double
   r0      (3,1) double
   v0      (3,1) double
-  options.options   (1,1) struct = odeset(RelTol=1e-9,AbsTol=1e-12);
+  options.options   (1,1) struct = odeset(RelTol=1e-13,AbsTol=1e-16);
   options.STM       (1,1) logical = false;
 end
 

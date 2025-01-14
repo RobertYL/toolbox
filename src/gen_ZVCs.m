@@ -1,12 +1,21 @@
 function [n_ZVCs,r_ZVCs] = gen_ZVCs(C,mu,ds,options)
 % GEN_ZVCS  Generate zero velocity curves at JC
+%
+%   USAGE:
+%     [n_ZVCs,r_ZVCs] = gen_ZVCs(C,mu,ds)
 %   
-%   C               : Jacobi constant for ZVC
-%   mu              : mass ratio
-%   ds              : nondimensional step size
-%   options.Method  : implicit solver method
-%                     default : "NPC" - natural parameter continuation
-%                         alt : "PAC" - pseudo-arclength continuation
+%   ARGUMENTS:
+%     C         - positive value
+%                 Jacobi constant for ZVC
+%     mu        - positive value
+%                 mass ratio
+%     ds        - positive value
+%                 nondimensional step size
+%
+%   OPTIONS:
+%     'Method'  - "NPC" (def) | "PAC"
+%                 continuation method: natural parameter, pseudo-arclength
+%
 
 arguments
     C (1,1) double
@@ -21,7 +30,7 @@ end
 
 % find Jacobi constants for each libration point
 L_pts = gen_L_pts(mu);
-C_L = PCR3BP.C(L_pts,zeros(2,5),mu);
+C_L = PCR3BP.C(mu,L_pts,zeros(2,5));
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Casework and find initial point along each ZVC

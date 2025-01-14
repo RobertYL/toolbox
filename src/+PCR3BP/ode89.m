@@ -15,7 +15,7 @@ arguments
   tspan   (1,:) double
   r0      (2,1) double
   v0      (2,1) double
-  options.options   (1,1) struct = odeset(RelTol=1e-9,AbsTol=1e-12);
+  options.options   (1,1) struct = odeset(RelTol=1e-13,AbsTol=1e-16);
   options.STM       (1,1) logical = false;
 end
 
@@ -47,8 +47,13 @@ v = s(3:4,:);
 
 if has_event
   varargout{1+options.STM} = te;
-  varargout{2+options.STM} = se(:,1:2)';
-  varargout{3+options.STM} = se(:,3:4)';
+  if numel(se) == 0
+    varargout{2+options.STM} = [];
+    varargout{3+options.STM} = [];
+  else
+    varargout{2+options.STM} = se(:,1:2)';
+    varargout{3+options.STM} = se(:,3:4)';
+  end
   varargout{4+options.STM} = ie;
 end
 end
