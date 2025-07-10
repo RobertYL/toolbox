@@ -63,8 +63,14 @@ arguments
 end
 
 % check for valid IC guess
-assert(r0(2) == 0);
-assert(v0(1) == 0);
+if r0(2) ~= 0
+  warning("Non-zero y0, snapping to 0");
+  r0(2) = 0;
+end
+if v0(1) ~= 0
+  warning("Non-zero xdot0, snapping to 0");
+  v0(1) = 0;
+end
 
 % unpack arguments
 if strcmpi(options.Mode,"x0")

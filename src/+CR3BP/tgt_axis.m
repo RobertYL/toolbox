@@ -63,8 +63,14 @@ arguments
 end
 
 % check for valid IC guess
-assert(norm(r0([2,3])) == 0);
-assert(v0(1) == 0);
+if norm(r0([2,3])) ~= 0
+  warning("Non-zero y0/z0, snapping to 0");
+  r0([2,3]) = 0;
+end
+if v0(1) ~= 0
+  warning("Non-zero xdot0, snapping to 0");
+  v0(1) = 0;
+end
 
 % check if planar
 if r0(3) == 0 && v0(3) == 0
