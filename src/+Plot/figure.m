@@ -9,18 +9,20 @@ function [fig,varargout] = figure(options)
 %   ARGUMENTS: NONE
 %
 %   OPTIONS:
-%     'Position'    - [50 200 650 500] (def) | [left bottom width height]
-%                     location and size of drawable area
-%     'Grid'        - [1 1] (def) | [rows columns]
-%                     number of rows and columns
-%     'Theme'       - "Light" (def) | "Dark"
-%                     figure window color theme
-%     'ColorMode'   - "Qual" | string
-%                     color scheme application. see PLOT.GET_COLOR
-%     'ColorScheme' - "Bright" | string
-%                     color scheme for plotting. see PLOT.GET_COLOR
-%     'ColorRange'  - [0,1] | vector
-%                     range of values to interpolate colors from
+%     'Position' | 'p'  - [50 200 650 500] (def) | [left bottom width height]
+%                         location and size of drawable area
+%     'Units'           - "pixels" (def) | "inches"
+%                         unit of measurement
+%     'Grid' | 'g'      - [1 1] (def) | [rows columns]
+%                         number of rows and columns
+%     'Theme'           - "Light" (def) | "Dark"
+%                         figure window color theme
+%     'ColorMode'       - "Qual" | string
+%                         color scheme application. see PLOT.GET_COLOR
+%     'ColorScheme'     - "Bright" | string
+%                         color scheme for plotting. see PLOT.GET_COLOR
+%     'ColorRange'      - [0,1] | vector
+%                         range of values to interpolate colors from
 %
 %   See also FIGURE
 %
@@ -29,22 +31,35 @@ function [fig,varargout] = figure(options)
 
 arguments
   options.Position                 = [50 200 650 500];
+  options.p
+  options.Units       (1,1) string = "pixels";
   options.Grid        (1,2) double = [1,1];
+  options.g           (1,2) double
   options.Theme       (1,1) string = "Light";
   options.ColorMode   (1,1) string = "Qual";
   options.ColorScheme (1,1) string = "Bright";
   options.ColorRange  (1,2) double = [0,1];
 end
 
+% process name-value option shorthands
+if isfield(options,"p"); options.Position = options.p; end
+if isfield(options,"g"); options.Grid = options.g; end
+
+% parse inputs
 if isa(options.Position,"string")
   if strcmpi(options.Position,"Tall")
     options.Position = [50 100 650 750];
+  elseif strcmpi(options.Position,"Wide")
+    options.Position = [50 200 900 500];
   elseif strcmpi(options.Position,"Big")
-    options.Position = [50 100 800 700];
+    options.Position = [50 100 800 750];
+  elseif strcmpi(options.Position,"Small")
+    options.Position = [50 300 400 300];
   else
     options.Position = [50 200 650 500];
   end
 end
+config.Units = options.Units;
 config.Position = options.Position;
 
 config.defaultAxesColorOrder = hex2rgb(Plot.get_color( ...
