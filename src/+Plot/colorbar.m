@@ -44,10 +44,10 @@ cb = colorbar(YDir=dir);
 if isfield(options,"Ticks")
   cb.Ticks = options.Ticks;
 end
+cb.Label.Interpreter = "latex";
 if isfield(options,"Label")
   cb.Label.String = options.Label;
 end
-cb.Label.Interpreter = "latex";
 cb.Label.FontSize = 14;
 
 end

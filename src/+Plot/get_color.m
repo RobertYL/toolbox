@@ -80,8 +80,8 @@ end
 if strcmpi(mode,"Qual")
   if strcmpi(scheme,"Bright")
     n = 6;
-    % blue, salmon, green, yellow, cyan, purple
-    colors = ["#4477AA","#EE6677","#228833","#CCBB44","#66CCEE","#AA3377"];
+    % blue, salmon, yellow, green, cyan, purple
+    colors = ["#4477AA","#EE6677","#CCBB44","#228833","#66CCEE","#AA3377"];
     % omitted grey: "#BBBBBB"
   elseif strcmpi(scheme,"Vibrant")
     n = 6;
