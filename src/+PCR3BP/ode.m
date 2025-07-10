@@ -3,10 +3,10 @@ function [sdot] = ode(s,mu)
 %   S(1:2) = position
 %   S(3:4) = velocity
 
-r = s(1:2);
-v = s(3:4);
+r = s(1:2,:);
+v = s(3:4,:);
 
 sdot = zeros(size(s));
-sdot(1:2) = v;
-sdot(3:4) = 2*[v(2);-v(1)] + PCR3BP.gradUast(r,mu);
+sdot(1:2,:) = v;
+sdot(3:4,:) = 2*[v(2,:);-v(1,:)] + PCR3BP.gradUast(r,mu);
 end
