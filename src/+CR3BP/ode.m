@@ -1,12 +1,21 @@
 function [sdot] = ode(s,mu)
 % CR3BP.ODE  First-order differential equation for spatial CR3BP
-%   S(1:3) = position
-%   S(4:6) = velocity
+%   Evaluate time derivative for spatial CR3BP for mass ratio MU and state
+%   vector(s) S = [position; velocity]
+%
+%   ARGUMENTS:
+%     s   - column vector | matrix
+%           state(s)
+%     mu  - positive scalar
+%           mass ratio
 
-r = s(1:3,:);
-v = s(4:6,:);
+arguments
+  s  (6,:) double
+  mu (1,1) double
+end
 
 sdot = zeros(size(s));
-sdot(1:3,:) = v;
-sdot(4:6,:) = 2*[v(2,:);-v(1,:);zeros(1,size(v,2))] + CR3BP.gradUast(r,mu);
+sdot(1:3,:) = s(4:6,:);
+sdot(4:6,:) = 2*[s(5,:);-s(4,:);zeros(1,size(s,2))] ...
+                + CR3BP.gradUast(s(1:3,:),mu);
 end
