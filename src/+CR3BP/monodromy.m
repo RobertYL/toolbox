@@ -13,17 +13,17 @@ function [M] = monodromy(mu,T,r0,v0,options)
 %
 %   OPTIONS:
 %
-%     'Method'      - computation method. "half" uses system properties to
-%                     compose two half-period STMs
-%                     options : "direct" | "half"
+%     'Method'      - "direct" (def) | "half" | "perp2axis"
+%                     computation method. "half" or "perp" uses system
+%                     properties to compose two half-period STMs
+%     'Integrator'  - "89" (def) | "45"
+%                     integrator
+%     'IntOptions'  - odeset(AbsTol=1e-13,RelTol=1e-16) (def) | odeset
+%                     integrator options. event function will be overridden
 %
-%     'Integrator'  - integrator
-%                     options : "89" | "45"
+%   Source: AAE 632 note set K, eq. (K.2)
+%           §2.2 of https://arxiv.org/abs/2602.16354
 %
-%     'IntOptions'  - integrator options. event function will be overridden
-%                     default : odeset(AbsTol=1e-13,RelTol=1e-16)
-%
-%   Source: AAE 632 note set K, eq (K.2)
 
 arguments
   mu (1,1) double
@@ -50,13 +50,8 @@ end
 
 if strcmpi(method,"direct")
   [~,~,~,M] = ode_int(r0,v0,T);
-elseif strcmpi(method,"half")
-  G = [1, 0, 0, 0, 0, 0;
-       0,-1, 0, 0, 0, 0;
-       0, 0, 1, 0, 0, 0;
-       0, 0, 0,-1, 0, 0;
-       0, 0, 0, 0, 1, 0;
-       0, 0, 0, 0, 0,-1];
+elseif strcmpi(method,"half") || strcmpi(method,"perp")
+  G = diag([1,-1,1,-1,1,-1]);
   Omega = [0,1,0;
           -1,0,0;
            0,0,0];
@@ -64,6 +59,16 @@ elseif strcmpi(method,"half")
   
   M = G*[zeros(3),-eye(3);eye(3),-2*Omega]*(phi.') ...
        *[-2*Omega,eye(3);-eye(3),zeros(3)]*G*phi;
+elseif strcmpi(method,"perp2axis")
+  G = diag([1,-1,1,-1,1,-1]);
+  H = diag([1,-1,-1,-1,1,1]);
+  Omega = [0,1,0;
+          -1,0,0;
+           0,0,0];
+  [~,~,~,phi] = ode_int(r0,v0,T/4);
+
+  M = (G*[zeros(3),-eye(3);eye(3),-2*Omega]*(phi.') ...
+       *[-2*Omega,eye(3);-eye(3),zeros(3)]*H*phi)^2;
 else
   warning("Invalid construction method selected");
 end
