@@ -50,11 +50,17 @@ if isa(options.Position,"string")
   if strcmpi(options.Position,"Tall")
     options.Position = [50 100 650 750];
   elseif strcmpi(options.Position,"Wide")
-    options.Position = [50 200 900 500];
+    options.Position = [50 200 800 450];
   elseif strcmpi(options.Position,"Big")
     options.Position = [50 100 800 750];
+  elseif strcmpi(options.Position,"Huge")
+    options.Position = [25 66 1500 800];
   elseif strcmpi(options.Position,"Small")
     options.Position = [50 300 400 300];
+  elseif strcmpi(options.Position,"Short")
+    options.Position = [50 200 650 300];
+  elseif strcmpi(options.Position,"Square")
+    options.Position = [50 200 700 550];
   else
     options.Position = [50 200 650 500];
   end

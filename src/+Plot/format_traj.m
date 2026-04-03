@@ -130,7 +130,7 @@ else
       DisplayName=pri_names(1),HandleVisibility=handle_vis);
   end
   if any(pri == 2)
-    scatter(1-mu,0,36,'ko', ...
+    scatter(1-mu,0,48,'ko', ...
       MarkerFaceColor=pri_clrs(2),MarkerEdgeColor=mkr_edge,LineWidth=1.25, ...
       DisplayName=pri_names(2),HandleVisibility=handle_vis);
   end
@@ -144,7 +144,7 @@ if ~isempty(pt)
     display_name = "L points";
   end
   pt = gen_L_pts(mu,Points=pt);
-  scatter(pt(1,:),pt(2,:),108,'x', ...
+  scatter(pt(1,:),pt(2,:),96,'x', ...
     MarkerEdgeColor=L_clr,LineWidth=1.5,DisplayName=display_name, ...
     HandleVisibility=handle_vis);
 end
@@ -154,8 +154,8 @@ set(gca,Layer="bottom"); % TODO: make this a setting
 
 % update axis labels
 if options.LabelFlag
-  xlabel("$x$ [LU]");
-  ylabel("$y$ [LU]");
+  xlabel("$x$ [nd]");
+  ylabel("$y$ [nd]");
 end
 
 % update ticks

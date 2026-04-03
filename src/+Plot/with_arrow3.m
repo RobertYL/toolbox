@@ -1,4 +1,4 @@
-function [plotHandle] = with_arrow3(data, varargin)
+function [plotHandle,varargout] = with_arrow3(data, varargin)
 % PLOT.WITH_ARROW3  Plot data with arrows along the curve showing the direction
 %   This function is meant to extend the abilities of the PLOT3 command by
 %   adding arrowheads to the curve.
@@ -79,7 +79,7 @@ defTime = [];
 p = inputParser;
 
 validData = @(x) isnumeric(x) && size(x,1) == 3;
-validColor = @(x) (isnumeric(x) && length(x) == 3) || ischar(x) || isstring(x);
+validColor = @(x) (isnumeric(x) && any(length(x) == [3, 4])) || ischar(x) || isstring(x);
 notNegNum = @(x) isnumeric(x) && x >= 0;
 
 addRequired(p, 'data', validData);
@@ -124,7 +124,7 @@ else
   if isstring(color) || ischar(color)
     color = hex2rgb(color);
   end
-  baseColor = rgb2hsv(color);
+  baseColor = rgb2hsv(color(1:3));
   baseColor(3) = 0.7*baseColor(3);
   baseColor = hsv2rgb(baseColor);
 end
@@ -147,10 +147,11 @@ zdata = data(3,:);
 
 % Make the color match a color specified in LineType
 % letters = ischarprop(lineType, 'alpha'); %logical array: whether or not each char is a letter
-letters = isletter(lineType);
-if(sum(letters) > 0)
-    color = lineType(letters);
-end
+% letters = isletter(lineType);
+% if(sum(letters) > 0)
+%     color = lineType(letters);
+% end
+% TODO: fix this to better (skip) capture of "--o" linetypes
 
 %% Compute arrow directions and locations
 arrows = zeros(numArrows, numFaces+2, 3);
@@ -241,17 +242,21 @@ plotHandle = plot3(xdata, ydata, zdata, lineType, ...
   'DisplayName', displayName);
 for n = 1:size(arrows,1)
   % draw bottom
-  patch('Vertices', squeeze(arrows(n,:,:)), ...
+  patchHandle(n,1) = patch('Vertices', squeeze(arrows(n,:,:)), ...
     'Faces', [2,(1:numFaces)+2,2], ...
     'FaceColor', baseColor, ...
     'LineStyle', 'none', ...
     'HandleVisibility', 'off');
   % draw top
-  patch('Vertices', squeeze(arrows(n,:,:)), ...
+  patchHandle(n,2) = patch('Vertices', squeeze(arrows(n,:,:)), ...
     'Faces', [1,(1:numFaces)+2,1], ...
-    'FaceColor', color, ...
-    'EdgeColor', color, ...
+    'FaceColor', color(1:3), ...
+    'EdgeColor', color(1:3), ...
     'HandleVisibility', 'off');
+end
+
+if nargout == 2
+  varargout{1} = patchHandle;
 end
 
 if(held); hold on; else; hold off; end

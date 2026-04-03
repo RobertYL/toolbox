@@ -23,8 +23,8 @@ function format_traj3(mu,options)
 %     'HandleVisibility' | 'hv' - "on" (def) | "off"
 %                                 set handle visibility
 %     'XTicks' | 'x'            - vector of increasing values
-%     'YTicks' | 'y'              set x/y-axis tick values and limits. by
-%                                 default, scales wrt points and primaries
+%     'YTicks' | 'y'              set x/y/z-axis tick values and limits. by
+%     'ZTicks' | 'z'              default, scales wrt points and primaries
 %     'Theme'                   - "Light" (def) | "Dark"
 %                                 figure window color theme
 %     
@@ -70,7 +70,7 @@ if isfield(options,"pri"); options.Primary = options.pri; end
 if isfield(options,"hv"); options.HandleVisibility = options.hv; end
 if isfield(options,"x"); options.XTicks = options.x; end
 if isfield(options,"y"); options.YTicks = options.y; end
-if isfield(options,"z"); options.YTicks = options.z; end
+if isfield(options,"z"); options.ZTicks = options.z; end
 
 % parse inputs
 if strcmpi(options.Theme,"Light")

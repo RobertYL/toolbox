@@ -1,4 +1,4 @@
-function [plotHandle] = with_arrow(xdata, ydata, varargin)
+function [plotHandle,varargout] = with_arrow(xdata, ydata, varargin)
 % PLOT.WITH_ARROW  Plot data with arrows along the curve showing the direction
 %   This function is meant to extend the abilities of the PLOT command by
 %   adding arrowheads to the curve.
@@ -32,7 +32,7 @@ function [plotHandle] = with_arrow(xdata, ydata, varargin)
 %     'NumArrows'         - 3 (def) | positive integer
 %                           number of arrowheads to place on the data
 %
-%     'AlignArrows'       - "center" (def) | "start" | "end"
+%     'AlignArrows'       - "center" (def) | "start" | "end" | "percent"
 %                           alignment of arrows along trajectory
 %
 %     'FlipDir'           - false (def) | logical
@@ -46,6 +46,13 @@ function [plotHandle] = with_arrow(xdata, ydata, varargin)
 %     'Time'              - vector
 %                           time evolution of data. used for aligning
 %                           arrows evenly in time
+%
+%     'Percent'           - vector
+%                           percentage of data to align arrows to. can't be
+%                           used with time (TODO: work with time)
+%
+%     'ArrowBase'         - -0.5 (def) | positive value
+%                           distance from base point to bottom of arrow
 %
 %   See also PLOT
 %
@@ -65,10 +72,12 @@ defArrowScale = 1;
 defLineType = '-';
 defColor = gca().ColorOrder(gca().ColorOrderIndex,:);
 defTime = [];
+defPct = [];
+defArrowBase = -0.5;
 
 p = inputParser;
 
-validColor = @(x) (isnumeric(x) && length(x) == 3) || ischar(x) || isstring(x);
+validColor = @(x) (isnumeric(x) && (length(x) == 3 || length(x) == 4)) || ischar(x) || isstring(x);
 notNegNum = @(x) isnumeric(x) && x >= 0;
 
 addRequired(p, 'xdata', @isnumeric);
@@ -85,6 +94,8 @@ addParameter(p, 'AlignArrows', defAlignArr, @(x) ischar(x) || isstring(x));
 addParameter(p, 'FlipDir', defFlipDir, @islogical);
 addParameter(p, 'ArrowScale', defArrowScale, notNegNum);
 addParameter(p, 'Time', defTime, @isnumeric);
+addParameter(p, 'Percent', defPct, @isnumeric);
+addParameter(p, 'ArrowBase', defArrowBase, @isnumeric);
 
 %% Parse
 % Check to see if the first optional input could be a LineType
@@ -107,6 +118,8 @@ alignArrows = p.Results.AlignArrows;
 flipDir = p.Results.FlipDir;
 scale = p.Results.ArrowScale;
 time = p.Results.Time;
+pct = p.Results.Percent;
+base = p.Results.ArrowBase;
 
 % Error checking
 if(length(xdata) ~= length(ydata))
@@ -117,20 +130,28 @@ if(~isempty(time) && length(xdata) ~= length(time))
     error('Data and time columns do not match');
 end
 
+if(strcmpi(alignArrows,"percent") && numel(pct) ~= numArrows)
+    error('Number of arrows not equal to percentages provided');
+end
+
 if(numArrows > length(xdata))
     error('Number of arrows exceeds number of data points! Cannot create arrows...');
 end
 
 % Make the color match a color specified in LineType
 % letters = ischarprop(lineType, 'alpha'); %logical array: whether or not each char is a letter
-letters = isletter(lineType);
-if(sum(letters) > 0)
-    color = lineType(letters);
+% letters = isletter(lineType);
+% if(sum(letters) > 0)
+%     color = lineType(letters);
+% end
+if isstring(color) || ischar(color)
+  color = hex2rgb(color);
 end
+% TODO: fix this to better (skip) capture of "--o" linetypes
 
 %% Compute arrow directions and locations
 arrows = zeros(numArrows, 4, 2);
-if isempty(time)
+if ~strcmpi(alignArrows,"percent") && isempty(time)
   stepSize = floor(length(xdata)/numArrows);
   if strcmpi(alignArrows,"center")
     stepStart = floor(length(xdata)/(2*numArrows))+1;
@@ -142,7 +163,7 @@ if isempty(time)
     error("Invalid arrow alignment specified");
   end
   ixArr = (0:numArrows-1)*stepSize+stepStart;
-else
+elseif ~strcmpi(alignArrows,"percent")
   timeStep = (time(end)-time(1))/numArrows;
   if strcmpi(alignArrows,"center")
     times = linspace(time(1)+timeStep/2,time(end)-timeStep/2,numArrows);
@@ -154,6 +175,8 @@ else
     error("Invalid arrow alignment specified");
   end
   ixArr = interp1(time,1:length(time),times,"nearest"); 
+else
+  ixArr = interp1(linspace(0,1,length(xdata)),1:length(xdata),pct,"nearest");
 end
 
 % Range of x and y; use to choose size of arrowhead
@@ -164,7 +187,7 @@ avgExt = mean([xExtent, yExtent]);
 % Compute dimensions
 l = 0.04*avgExt*scale;      % Length of arrowhead
 w = l;                      % Width of arrowhead
-s = -0.5*l;                 % Distance from base point to bottom (flat edge) of arrowhead
+s = base*l;                 % Distance from base point to bottom (flat edge) of arrowhead
 m = 0.33*l;                 % Indent distance from bottom (flat edge) of arrowhead
 
 for n = 1:numArrows
@@ -206,8 +229,12 @@ plotHandle = plot(xdata, ydata, lineType, 'Color', color, ...
     'LineWidth', lineWidth, 'HandleVisibility', ...
     handleVisibility, 'DisplayName', displayName);
 for n = 1:size(arrows,1)
-    patch(arrows(n,:,1), arrows(n,:,2), 'r', 'FaceColor', color, ...
-        'EdgeColor', color, 'HandleVisibility', 'off');
+    patchHandle(n) = patch(arrows(n,:,1), arrows(n,:,2), 'r', ...
+        'FaceColor', color(1:3), 'EdgeColor', color(1:3), 'HandleVisibility', 'off');
+end
+
+if nargout == 2
+  varargout{1} = patchHandle;
 end
 
 if(wasHolding)

@@ -43,6 +43,7 @@ cb = colorbar(YDir=dir);
 
 if isfield(options,"Ticks")
   cb.Ticks = options.Ticks;
+  clim([min(cb.Ticks),max(cb.Ticks)]);
 end
 cb.Label.Interpreter = "latex";
 if isfield(options,"Label")

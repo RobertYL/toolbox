@@ -4,22 +4,23 @@ function [color] = get_color(options)
 %   ARGUMENTS: NONE
 %
 %   OPTIONS:
-%     'Mode'    - "Qual" (def) | "Div" | "Seq"
-%                 color scheme application
-%     'Scheme'  - {"Qual"} : "Bright" (def) | "Vibrant" | "Muted"
-%                            | "Manifold"
-%                 {"Div"}  : "Sunset" (def) | "Nightfall"
-%                 {"Seq"}  : "Rainbow" (def) | "YlOrBr" | "Incandescent"
-%                 color scheme. the chosen scheme supercedes the mode
-%     'Value'   - {"Qual"}      : 1 (def) | positive integer | vector
-%                 {"Div","Seq"} : 1 (def) | nonnegative value | vector
-%                 value of color(s) to return
-%     'Range'   - {"Div","Seq"} : [0,1] (def) | [lower upper]
-%                 range of values to interpolate. ignored for "Qual" mode
-%     'All'     - false (def) | true
-%                 return all colors in scheme. overrides specified value(s)
+%     'Mode'        - "Qual" (def) | "Div" | "Seq"
+%                     color scheme application
+%     'Scheme'      - {"Qual"} : "Bright" (def) | "Vibrant" | "Muted"
+%                                | "Manifold"
+%                     {"Div"}  : "Sunset" (def) | "Nightfall"
+%                     {"Seq"}  : "Rainbow" (def) | "YlOrBr" | "Incandescent"
+%                     color scheme. the chosen scheme supercedes the mode
+%     'Value' | 'v' - {"Qual"}      : 1 (def) | positive integer | vector
+%                     {"Div","Seq"} : 1 (def) | nonnegative value | vector
+%                     value of color(s) to return
+%     'Range'       - {"Div","Seq"} : [0,1] (def) | [lower upper]
+%                     range of values to interpolate. ignored for "Qual" mode
+%     'All'         - false (def) | true
+%                     return all colors in scheme. overrides specified value(s)
 %
-%   Source: https://personal.sron.nl/~pault/#sec:qualitative
+%   Sources: https://sronpersonalpages.nl/~pault/#sec:qualitative
+%            https://colorbrewer2.org/
 %
 
 % TODO: add reversing colormap
@@ -28,15 +29,19 @@ arguments
   options.Mode   (1,1) string;
   options.Scheme (1,1) string;
   options.Value  (1,:) double;
+  options.v      (1,:) double;
   options.Range  (1,2) double = [0,1];
   options.All    (1,1) logical = false;
 end
 
 modes.qual = ["Bright","Vibrant","Muted","Manifold"];
-modes.div  = ["Sunset","Nightfall"];
-modes.seq  = ["Rainbow","YlOrBr","Incandescent"];
+modes.div  = ["Sunset","Nightfall","BuYlRd","GYPi"];
+modes.seq  = ["Rainbow","YlOrBr","BrOrYl","Incandescent","BuPu"];
 
 %% parse input
+
+% process name-value option shorthands
+if isfield(options,"v"); options.Value = options.v; end
 
 % parse color mode and scheme
 if isfield(options,"Scheme")
@@ -108,6 +113,14 @@ elseif strcmpi(mode,"Div")
     colors = ["#125A56","#00767B","#238F9D","#42A7C6","#60BCE9", ...
       "#9DCCEF","#C6DBED","#DEE6E7","#ECEADA","#F0E6B2","#F9D576", ...
       "#FFB954","#FD9A44","#F57634","#E94C1F","#D11807","#A01813"];
+  elseif strcmpi(scheme,"BuYlRd")
+    n = 9;
+    colors = ["#4575b4","#74add1","#abd9e9","#e0f3f8","#ffffbf", ...
+      "#fee090","#fdae61","#f46d43","#d73027"];
+  elseif strcmpi(scheme,"GYPi")
+    n = 9;
+    colors = ["#4d9221","#7fbc41","#b8e186","#e6f5d0","#f7f7f7", ...
+      "#fde0ef","#f1b6da","#de77ae","#c51b7d"];
   end
   
 elseif strcmpi(mode,"Seq")
@@ -119,10 +132,18 @@ elseif strcmpi(mode,"Seq")
     n = 9;
     colors = ["#FFFFE5","#FFF7BC","#FEE391","#FEC44F","#FB9A29", ...
       "#EC7014","#CC4C02","#993404","#662506"];
+  elseif strcmpi(scheme,"BrOrYl")
+    n = 9;
+    colors = ["#662506","#993404","#CC4C02","#EC7014","#FB9A29", ...
+      "#FEC44F","#FEE391","#FFF7BC","#FFFFE5"];
   elseif strcmpi(scheme,"Incandescent")
     n = 11;
     colors = ["#CEFFFF","#C6F7D6","#A2F49B","#BBE453","#D5CE04", ...
       "#E7B503","#F19903","#F6790B","#F94902","#E40515","#A80003"];
+  elseif strcmpi(scheme,"BuPu")
+    n = 9;
+    colors = ["#023858","#045a8d","#0570b0","#3690c0","#74a9cf", ...
+      "#a6bddb","#d0d1e6","#ece7f2","#fff7fb"];
   end
 end
 

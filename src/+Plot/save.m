@@ -11,7 +11,7 @@ function save(fig,filename,options)
 %   OPTIONS:
 %     'Resolution' | 'r'        - 300 (def) | positive integer
 %                                 resolution (DPI)
-%     'BackgroundColor' | 'bg'  - "#FFFFFF" (def) | "Pres" or "Pres-Spr" | string
+%     'BackgroundColor' | 'bg'  - "#FFFFFF" (def) | "Pres" or "Pres-Sum" or "Pres-Spr" | string
 %                                 background color
 %     'Extensions' | 'e'        - ["png", "fig"] (def) | string array
 %                                 file extensions to export to
@@ -37,6 +37,8 @@ if isfield(options,"e"); options.Extensions = options.e; end
 
 % process color
 if strcmpi(options.BackgroundColor,"Pres")
+  options.BackgroundColor = "#FFFEF8";
+elseif strcmpi(options.BackgroundColor,"Pres-Sum")
   options.BackgroundColor = "#FFFBFA";
 elseif strcmpi(options.BackgroundColor,"Pres-Spr")
   options.BackgroundColor = "#F8F5F1";
