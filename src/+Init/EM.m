@@ -1,7 +1,7 @@
 %% EM.m
 % initialize Earth-Moon system parameters
 
-p.mu = 0.01215058560962404;
+p.mu = 0.012150585609624;
 p.LU = 389703;
 p.TU = 382981;
 p.R_M = 1737.4/p.LU;

@@ -14,8 +14,18 @@ arguments
   mu (1,1) double
 end
 
+% initialize
 sdot = zeros(size(s));
-sdot(1:3,:) = s(4:6,:);
-sdot(4:6,:) = 2*[s(5,:);-s(4,:);zeros(1,size(s,2))] ...
-                + CR3BP.gradUast(s(1:3,:),mu);
+r = s(1:3,:);
+v = s(1:3,:);
+
+% compute flow
+sdot(1:3,:) = v;
+sdot(4,:) = +2*v(2,:) + r(1,:);
+sdot(5,:) = -2*v(1,:) + r(2,:);
+r_13 = r + [mu;0;0];
+r_23 = r - [1-mu;0;0];
+sdot(4:6,:) = sdot(4:6,:) ...
+              - (1-mu)*r_13./power(vecnorm(r_13),3) ...
+              - mu*r_23./power(vecnorm(r_23),3);
 end

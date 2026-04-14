@@ -3,9 +3,16 @@ function [sdot] = ode_STM(s,mu)
 %   Reference trajectory and state transition matrix (STM) are propagated
 %   simultaneously to maintain accuracy in sensitive regions
 %
+%   Not vectorized!
+%
 %   S(1:3)  = position
 %   S(4:6)  = velocity
 %   S(7:42) = STM
+
+arguments
+  s (42,1) double
+  mu (1,1) double
+end
 
 sdot = zeros(42,1);
 sdot(1:6) = CR3BP.ode(s(1:6),mu);
