@@ -17,7 +17,7 @@ end
 % initialize
 sdot = zeros(size(s));
 r = s(1:3,:);
-v = s(1:3,:);
+v = s(4:6,:);
 
 % compute flow
 sdot(1:3,:) = v;
