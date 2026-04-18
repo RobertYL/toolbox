@@ -1,4 +1,4 @@
 %% SETUP.m
 % toolbox setup
 
-toolbox.ver = [1,0,0];
+toolbox.ver = [1,1,0];

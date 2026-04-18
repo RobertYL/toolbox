@@ -1,3 +1,12 @@
 # MATLAB files
 *.asv
 *.mexw64
+
+# YCM configuration
+.ycm_extra_conf.py
+
+# Vim files
+*.swp
+
+# External libaries for MEX
+extern/

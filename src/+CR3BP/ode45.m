@@ -9,6 +9,8 @@ function [t,r,v,varargout] = ode45(mu,tspan,r0,v0,options)
 %   [t,r,v,phi] = CR3BP.ode45(mu,tspan,r0,v0,STM=true)
 %
 %   If an event function is provided, [te,re,ve,ie] are appended to return
+%
+%   DEPRECATED. TO BE REMOVED IN FUTURE VERSION.
 
 arguments
   mu      (1,1) double
