@@ -11,4 +11,9 @@ All functions using the C API are self-contained and can be compiled in MATLAB C
 mex *.cpp
 ```
 
+Compile with OpenMP with
+```
+mex CXXFLAGS="$CXXFLAGS -fopenmp" LDFLAGS="$LDFLAGS -fopenmp" *.cpp
+```
+
 
