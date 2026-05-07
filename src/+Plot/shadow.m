@@ -19,6 +19,9 @@ function [plotHandles] = shadow(data, varargin)
 %     'Color'             - grey (def) | color string | rgb array | "r" | ...
 %                           the color of the data
 %
+%     'Alpha'             - 0.5 (def) | scalar
+%                           alpha transparency
+%
 %     'LineWidth'         - 1.25 (def) | positive value
 %                           a number specifying the width of the plotted
 %                           line. see PLOT3 help for more details
@@ -44,6 +47,7 @@ defDisplayName = '';
 defHandleVisibility = 'on';
 defLineType = '-';
 defColor = [0.5,0.5,0.5];
+defAlpha = 0.5;
 
 p = inputParser;
 
@@ -56,6 +60,7 @@ addRequired(p, 'data', validData);
 addOptional(p, 'LineType', defLineType, @(x) ischar(x) || isstring(x));
 
 addParameter(p, 'Color', defColor, validColor);
+addParameter(p, 'Alpha', defAlpha, @(x) isnumeric(x) && isscalar(x));
 addParameter(p, 'LineWidth', defLineWidth, notNegNum);
 addParameter(p, 'Lims', defLims, @(x) isnan(x) || (isnumeric(x) && numel(x) == 3));
 addParameter(p, 'DisplayName', defDisplayName, @(x) ischar(x) || isstring(x));
@@ -76,6 +81,7 @@ color = p.Results.Color;
 if isstring(color) || ischar(color)
   color = hex2rgb(color);
 end
+color(4) = p.Results.Alpha;
 lineType = p.Results.LineType;
 lineWidth = p.Results.LineWidth;
 lims = p.Results.Lims;
