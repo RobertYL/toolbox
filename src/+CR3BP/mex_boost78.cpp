@@ -5,13 +5,13 @@
  *  Also supports batch and parallel evaluation. See extended usage.
  *
  *  USAGE:
- *    [t,s] = mex_boost78(tspan,s0)
+ *    [t,s]     = mex_boost78(tspan,s0)
  *    [t,s,Phi] = mex_boost78(tspan,s0)
- *    [...] = mex_boost78(...,opts)
+ *    [...]     = mex_boost78(...,opts)
  *
  *  EXTENDED USAGE:
  *    [sf,Phi] = mex_boost78([t0,tf],s0)
- *    [s,Phi] = mex_boost78(tspan,s0)
+ *    [s,Phi]  = mex_boost78(tspan,s0)
  *    
  */
 

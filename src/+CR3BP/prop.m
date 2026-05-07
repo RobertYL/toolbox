@@ -2,11 +2,19 @@ function varargout = prop(varargin)
 % CR3BP.PROP  Propagate CR3BP dynamics
 %   Propagate CR3BP dynamics for various ODE integrators
 %
+%   Also supports batch and parallel evaluation. See extended usage.
+%
 %   USAGE:
 %     [t,r,v]        = prop(tspan,r0,v0)
 %     [t,s]          = prop(tspan,s0)
 %     [...,Phi]      = prop(...,STM=true)
 %     [...,te,se,ie] = prop(...,odeopt=odeset(...,Events=...))
+%
+%   EXTENDED USAGE: (Events are not supported)
+%     [rf,vf]   = prop([t0,tf],r0,v0)
+%     [sf]      = prop([t0,tf],s0)
+%     [s]       = prop(tspan,s0)
+%     [...,Phi] = prop(...,STM=true)
 %
 %   OPTIONS:
 %     'mu'          - CR3BP.Cfg.mu (def) | scalar
@@ -24,6 +32,7 @@ function varargout = prop(varargin)
 %
 
 % TODO: add support for MEXed events <04-18-26>
+%       related: support for batched events? <05-07-26>
 % TODO: add support for straight MATLAB propagation <04-18-26>
 
 %% Parse Input
@@ -32,20 +41,20 @@ function varargout = prop(varargin)
 assert(numel(varargin{1}) >= 2 ...
         && isrow(varargin{1}) ...
         && isa(varargin{1},"double"), ...
-        "CR3BP.Prop: Invalid tspan");
+        "CR3BP.prop: Invalid tspan");
 tspan = varargin{1};
 if(size(varargin{2},1) == 6)
   assert(isa(varargin{2},"double"), ...
-          "CR3BP.Prop: Invalid s0");
+          "CR3BP.prop: Invalid s0");
   s0 = varargin{2};
   iargin = 3;
   has_r0v0 = false;
 else
   assert(size(varargin{2},1) == 3 && isa(varargin{2},"double") ...
           && size(varargin{3},1) == 3 && isa(varargin{3},"double"), ...
-          "CR3BP.Prop: Invalid r0 or v0");
-  assert(size(varargin{2},1) == size(varargin{3},1), ...
-          "CR3BP.Prop: r0 and v0 are not the same size");
+          "CR3BP.prop: Invalid r0 or v0");
+  assert(size(varargin{2},2) == size(varargin{3},2), ...
+          "CR3BP.prop: r0 and v0 are not the same size");
   s0 = [varargin{2};varargin{3}];
   iargin = 4;
   has_r0v0 = true;
@@ -71,11 +80,14 @@ has_mu = opts.mu ~= CR3BP.Cfg.mu;
 has_STM = opts.STM;
 has_event = ~isempty(opts.IntOptions.Events);
 
+is_batch = size(s0,2) >= 2;
+assert(~(is_batch && has_event),"CR3BP.prop: Does not support batched events");
+
 % TODO: only covers some call cases, fix when necessary <04-18-26>
-assert(opts.MEX,"CR3BP.Prop: Does not support non-MEX");
+assert(opts.MEX,"CR3BP.prop: Does not support non-MEX");
 
 if opts.STM
-  s0 = [s0;reshape(eye(6),[36,1])];
+  s0 = [s0;repmat(reshape(eye(6),[36,1]),[1,size(s0,2)])];
 end
 
 if has_event
@@ -93,25 +105,41 @@ if has_event
   end
 else
   if has_mu; opts.IntOptions.mu = opts.mu; end
-  if ~opts.STM
-    [t,s] = CR3BP.mex_boost78(tspan,s0,opts.IntOptions);
+  if ~is_batch
+    if ~opts.STM
+      [t,s] = CR3BP.mex_boost78(tspan,s0,opts.IntOptions);
+    else
+      [t,s,Phi] = CR3BP.mex_boost78(tspan,s0,opts.IntOptions);
+    end
   else
-    [t,s,Phi] = CR3BP.mex_boost78(tspan,s0,opts.IntOptions);
+    if ~opts.STM
+      [s] = CR3BP.mex_boost78(tspan,s0,opts.IntOptions);
+    else
+      [s,Phi] = CR3BP.mex_boost78(tspan,s0,opts.IntOptions);
+    end
   end
 end
 
 %% Parse Output
 
-varargout{1} = t;
+if ~is_batch
+  varargout{1} = t;
+end
+
 if has_r0v0
-  varargout{2} = s(1:3,:);
-  varargout{3} = s(4:6,:);
+  if ismatrix(s)
+    varargout{1+~is_batch} = s(1:3,:);
+    varargout{2+~is_batch} = s(4:6,:);
+  else
+    varargout{1+~is_batch} = s(1:3,:,:);
+    varargout{2+~is_batch} = s(4:6,:,:);
+  end
 else
-  varargout{2} = s;
+  varargout{1+~is_batch} = s;
 end
 
 if has_STM
-  varargout{3+has_r0v0} = Phi;
+  varargout{2+~is_batch+has_r0v0} = Phi;
 end
 
 if has_event
