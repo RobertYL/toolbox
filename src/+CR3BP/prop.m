@@ -24,6 +24,7 @@ function varargout = prop(varargin)
 %
 
 % TODO: add support for MEXed events <04-18-26>
+% TODO: add support for straight MATLAB propagation <04-18-26>
 
 %% Parse Input
 
@@ -52,7 +53,7 @@ end
 
 % Set default options
 opts.mu = CR3BP.Cfg.mu;
-opts.STM = true;
+opts.STM = false;
 opts.Integrator = "Boost78"; % NOTE: unused <04-18-26>
 opts.IntOptions = Cfg.odeset;
 opts.MEX = true;
@@ -66,11 +67,11 @@ end
 %% Propagate
 
 has_mu = opts.mu ~= CR3BP.Cfg.mu;
+
 has_STM = opts.STM;
 has_event = ~isempty(opts.IntOptions.Events);
 
 % TODO: only covers some call cases, fix when necessary <04-18-26>
-assert(~has_mu,"CR3BP.Prop: Does not support non-EM mu");
 assert(opts.MEX,"CR3BP.Prop: Does not support non-MEX");
 
 if opts.STM
@@ -78,7 +79,12 @@ if opts.STM
 end
 
 if has_event
-  [t,s,te,se,ie] = ode89(@CR3BP.mex_ode,tspan,s0,opts.IntOptions);
+  if ~opts.STM; ode = @CR3BP.mex_ode; else; ode = @CR3BP.mex_ode_STM; end
+  if has_mu
+    [t,s,te,se,ie] = ode89(ode,tspan,s0,opts.IntOptions,opts.mu);
+  else
+    [t,s,te,se,ie] = ode89(ode,tspan,s0,opts.IntOptions);
+  end
   t = t.'; s = s.'; te = te.'; se = se.'; ie = ie.';
   if opts.STM
     se = se(1:6,:);
@@ -86,6 +92,7 @@ if has_event
     s = s(1:6,:);
   end
 else
+  if has_mu; opts.IntOptions.mu = opts.mu; end
   if ~opts.STM
     [t,s] = CR3BP.mex_boost78(tspan,s0,opts.IntOptions);
   else
